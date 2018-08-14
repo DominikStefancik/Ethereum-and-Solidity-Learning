@@ -1,0 +1,11 @@
+{
+  "name": "lottery-backend",
+  "version": "1.0.0",
+  "description": "\"Backend for the Lottery project with Solidity code\"",
+  "main": "lottery.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Dominik Stefancik",
+  "license": "MIT"
+}
