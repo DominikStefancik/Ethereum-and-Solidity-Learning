@@ -21,6 +21,7 @@ const deploy = async () => {
     .deploy({ data: "0x" + bytecode })
     .send({ from: deploymentAccount, gas: "1000000" });
 
+  console.log("ABI of the deployed contract:\n", interface);  
   console.log("Contract deployed to address", deployedContract.options.address);
 }
 
