@@ -4,8 +4,14 @@
   "description": "\"Backend for the Lottery project with Solidity code\"",
   "main": "lottery.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha"
   },
   "author": "Dominik Stefancik",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "ganache-cli": "^6.1.6",
+    "mocha": "^5.2.0",
+    "solc": "^0.4.24",
+    "web3": "^1.0.0-beta.35"
+  }
 }
