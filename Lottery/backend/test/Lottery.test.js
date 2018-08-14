@@ -17,7 +17,7 @@ beforeEach(async () => {
   player1Account = accounts[1];
   player2Account = accounts[2];
   lotteryContract = await new web3.eth.Contract(JSON.parse(interface))
-    .deploy({ data: "0x" + bytecode})
+    .deploy({ data: bytecode})
     .send({ from: creatorAccount, gas: "1000000" })
 });
 
