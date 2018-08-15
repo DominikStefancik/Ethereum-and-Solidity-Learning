@@ -23,6 +23,10 @@ class App extends Component {
   }
 
   render() {
+    const playersList = this.state.players.map((player) =>
+      <li>{player}</li>
+    );
+
     return (
       <div>
         <h2>Lottery Contract</h2>
@@ -30,8 +34,12 @@ class App extends Component {
           This contract is managed by account with the address { this.state.manager }.
         </p>
         <p>
-          There are currently { this.state.players.length } entered the lottery, competing to win
-          { web3.utils.fromWei(this.state.balance, "ether") } ether.
+          There are currently { this.state.players.length } players who entered the lottery, competing to 
+          win { web3.utils.fromWei(this.state.balance, "ether") } ether.
+        </p>
+        <p>
+          Players:<br/>
+          <ul>{playersList}</ul>
         </p>
       </div>
     );
