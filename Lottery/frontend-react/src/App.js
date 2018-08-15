@@ -6,6 +6,7 @@ import lottery from "./lottery";
 class App extends Component {
   state = { 
     manager: "",
+    newPlayer: "",
     players: [],
     balance: "",
     bettingAmount: ""
@@ -15,9 +16,14 @@ class App extends Component {
     const manager = await lottery.methods.manager().call();
     const players = await lottery.methods.getPlayers().call();
     const balance = await web3.eth.getBalance(lottery.options.address);
+    const accounts = await web3.eth.getAccounts();
+    // we assume that the first account of whoever visits the page is the account
+    // he wants to use for betting
+    const newPlayer = accounts[0];
     
     this.setState({ 
       manager: manager,
+      newPlayer: newPlayer,
       players: players,
       balance: balance,
       message: ""
@@ -29,22 +35,33 @@ class App extends Component {
   onSubmit = async (event) => {
     event.preventDefault();
 
-    const accounts = await web3.eth.getAccounts();
-    // we assume that the first account of whoever visits the page is the account
-    // he wants to use for betting
-    const newPlayer = accounts[0];
-
     this.setState({ message: "Waiting for the transaction to be sent to the network..." });
 
     await lottery.methods.enter().send({
-      from: newPlayer, 
+      from: this.state.newPlayer, 
       value: web3.utils.toWei(this.state.bettingAmount, "ether")
     });
 
     const players = await lottery.methods.getPlayers().call();
+    const balance = await web3.eth.getBalance(lottery.options.address);
     this.setState({ 
       players: players,
-      message: "The player " + newPlayer + " has entered the lottery!" 
+      balance: balance,
+      message: "The player " + this.state.newPlayer + " has entered the lottery!" 
+    });
+  }
+
+  pickWinner = async (event) => {
+    this.setState({ message: "Picking the winner..." });
+
+    await lottery.methods.pickWinner().send({
+      from: this.state.manager
+    });
+
+    this.setState({ 
+      players: [],
+      balance: "",
+      message: "The winner has been picked!" 
     });
   }
 
@@ -77,6 +94,13 @@ class App extends Component {
           </div>
           <button>Enter</button>
         </form>
+        { this.state.newPlayer == this.state.manager &&
+          <div>
+            <hr/>
+            <h4>Ready to pick a winner?</h4>
+            <button onClick={this.pickWinner}>Pick a winner!</button>
+          </div>
+        }
         <hr/>
         <h1>{this.state.message}</h1>
       </div>
