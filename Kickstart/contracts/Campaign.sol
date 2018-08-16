@@ -13,7 +13,9 @@ contract Campaign {
     
     address public manager;
     uint public minimumContribution;
-    address[] public approvers;
+    
+    // IMPORTANT: the keys are NOT stored in the mapping, only values are
+    mapping(address => bool) public approvers;
     Request[] public requestList;
     
     modifier restrictedToManager() {
@@ -28,10 +30,11 @@ contract Campaign {
     
     function contribute() public payable {
         // msg.value contains amount of money a caller sent in the transaction
-        // in order to call this function
+        // in order to call the "contribute" function
         require(msg.value >= minimumContribution);
         
-        approvers.push(msg.sender);
+        // IMPORTANT: the addresses are NOT stored in the mapping, only bool values are
+        approvers[msg.sender] = true;
     }
     
     function createRequest(string description, uint value, address recipient) 
