@@ -36,7 +36,9 @@ contract Campaign {
     
     function createRequest(string description, uint value, address recipient) 
         public restrictedToManager {
-        Request newRequest = Request({
+        // whenever we create a new object it is located in memory
+        // that's why we need to insert the keyword "memory" when we declare a new variable
+        Request memory newRequest = Request({
             description: description,
             value: value,
             recipient: recipient,
