@@ -19,6 +19,7 @@ contract Campaign {
     uint public minimumContribution;
     
     // IMPORTANT: the keys are NOT stored in the mapping, only values are
+    // Mapping only serves as a lookup structure, we CANNOT iterate over its keys or values
     mapping(address => bool) public contributors;
     Request[] public requestList;
     
@@ -58,5 +59,18 @@ contract Campaign {
         });
         
         requestList.push(newRequest);
+    }
+    
+    function approveRequest(uint requestIndex) public {
+        // we want to change the request from the requestList, that's why we use "storage" keyword
+        Request storage request = requestList[requestIndex];
+        
+        // first check if the person who wants to approve a request, contributed to the project
+        require(contributors[msg.sender]);
+        // then check if the person already approved the particular request
+        require(!request.approvers[msg.sender]);
+        
+        request.approvers[msg.sender] = true;
+        request.approvalCount++;
     }
 }
