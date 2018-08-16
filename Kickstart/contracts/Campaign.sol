@@ -15,13 +15,14 @@ contract Campaign {
         mapping(address => bool) approvers;
     }
     
+    Request[] public requestList;
     address public manager;
     uint public minimumContribution;
     
     // IMPORTANT: the keys are NOT stored in the mapping, only values are
     // Mapping only serves as a lookup structure, we CANNOT iterate over its keys or values
     mapping(address => bool) public contributors;
-    Request[] public requestList;
+    uint public contributorsCount;
     
     modifier restrictedToManager() {
         require(msg.sender == manager);
@@ -40,6 +41,7 @@ contract Campaign {
         
         // IMPORTANT: the addresses are NOT stored in the mapping, only bool values are
         contributors[msg.sender] = true;
+        contributorsCount++;
     }
     
     function createRequest(string description, uint value, address recipient) 
@@ -72,5 +74,17 @@ contract Campaign {
         
         request.approvers[msg.sender] = true;
         request.approvalCount++;
+    }
+    
+    function finalizeRequest(uint requestIndex) public restrictedToManager {
+        Request storage request = requestList[requestIndex];
+        
+        // we can finalise only requests which are incomplete
+        require(!request.isCompleted);
+        // the request can be finalised only if we have more than 50% of contributors who approved it
+        require(request.approvalCount > (contributorsCount / 2));
+        
+        request.recipient.transfer(request.value);
+        request.isCompleted = true;
     }
 }
