@@ -13,7 +13,7 @@ let campaignAddress;
 let campaignContract;
 
 beforeEach(async () => {
-  accounts = web3.eth.getAccounts();
+  accounts = await web3.eth.getAccounts();
   testAccount = accounts[0];
 
   // we use this way of creating a new contract Javascript object when we want to 
@@ -33,8 +33,18 @@ beforeEach(async () => {
 
   // we use this way of creating a new contract Javascript object when the contract is already
   // deployed and we have its address
-  campaignAddress = await new web3.eth.Contract(
+  campaignContract = await new web3.eth.Contract(
     JSON.parse(compiledCampaign.interface), 
     campaignAddress
   );
+});
+
+describe("Campaign factory", () => {
+  it("The campaign factory is deployed", () => {
+    assert.ok(factoryContract.options.address);
+  });
+
+  it("A campaign created by the factory is deployed", () => {
+    assert.ok(campaignContract.options.address);
+  });
 });
