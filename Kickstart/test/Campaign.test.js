@@ -68,7 +68,9 @@ describe("Campaign contract", () => {
     // "contributors" is a mapping and we can only use it fo lookup
     // by calling "contributors(contributor)" we search a value from the mapping
     const isContributor = await campaignContract.methods.contributors(contributor).call();
+    const contributorsCount = await campaignContract.methods.contributorsCount().call();
     assert(isContributor);
+    assert.strictEqual(contributorsCount, "1");
   });
 
   it("A person needs to provide minimum amount of money to become a contributor", async () => {
@@ -97,6 +99,78 @@ describe("Payment request", () => {
     assert.strictEqual("2000", request.value);
     assert.strictEqual(recipient, request.recipient);
   });
+
+  it("A person who is not the manager cannot create a payment request", async () => {
+    try {
+      await campaignContract.methods
+        .createRequest("Buy batteries", "2000", recipient)
+        .send({ from: recipient, gas: "1000000"});
+      
+      assert(false);
+    } catch (error) {
+      assert(error);
+    }
+  });
+
+  it("A contributor can approve request", async () => {
+    await campaignContract.methods.contribute().send({ 
+      from: contributor,
+      value: "1100" 
+    });
+
+    await campaignContract.methods
+      .createRequest("Buy batteries", "2000", recipient)
+      .send({ from: creator, gas: "1000000"});
+    let request = await campaignContract.methods.requestList(0).call();
+
+    await campaignContract.methods.approveRequest(0).send({ from: contributor, gas: "1000000"});
+
+    // we need to get a fresh new copy of the request from the contract in order to verify
+    // it was approved
+    request = await campaignContract.methods.requestList(0).call();
+    assert.strictEqual(request.approvalCount, "1");
+  });
+
+  it("A person who is not a contributor cannot approve request", async () => {
+    await campaignContract.methods.contribute().send({ 
+      from: contributor,
+      value: "1100" 
+    });
+
+    await campaignContract.methods
+      .createRequest("Buy batteries", "2000", recipient)
+      .send({ from: creator, gas: "1000000"});
+    const request = await campaignContract.methods.requestList(0).call();
+
+    try {
+      await campaignContract.methods.approveRequest(0).send({ from: creator, gas: "1000000"});
+      
+      assert(false);
+    } catch (error) {
+      assert(error);
+    }
+  });
+
+  it("A contributor cannot approve the same request multiple times", async () => {
+    await campaignContract.methods.contribute().send({ 
+      from: contributor,
+      value: "1100" 
+    });
+    
+    await campaignContract.methods
+      .createRequest("Buy batteries", "2000", recipient)
+      .send({ from: creator, gas: "1000000"});
+
+    await campaignContract.methods.approveRequest(0).send({ from: contributor, gas: "1000000"});
+    
+    try {
+      await campaignContract.methods.approveRequest(0).send({ from: contributor, gas: "1000000"});
+      
+      assert(false);
+    } catch (error) {
+      assert(error);
+    }
+  });
 });
 
 describe("End to end tests", () => {
@@ -109,7 +183,7 @@ describe("End to end tests", () => {
     await campaignContract.methods
       .createRequest("Buy batteries", web3.utils.toWei("5", "ether"), recipient)
       .send({ from: creator, gas: "1000000"});
-    const request = await campaignContract.methods.requestList(0).call();
+    let request = await campaignContract.methods.requestList(0).call();
 
     await campaignContract.methods.approveRequest(0).send({ from: contributor, gas: "1000000"});
 
@@ -120,5 +194,78 @@ describe("End to end tests", () => {
     balance = parseFloat(balance);
 
     assert(balance > 104);
+
+    request = await campaignContract.methods.requestList(0).call();
+    assert(request.isCompleted);
+  });
+
+  it("A completed request cannot be processed", async () => {
+    await campaignContract.methods.contribute().send({ 
+      from: contributor,
+      value: "1100" 
+    });
+
+    await campaignContract.methods
+      .createRequest("Buy batteries", "200", recipient)
+      .send({ from: creator, gas: "1000000"});
+
+    await campaignContract.methods.approveRequest(0).send({ from: contributor, gas: "1000000"});
+    await campaignContract.methods.finalizeRequest(0).send({ from: creator, gas: "1000000"});
+
+    try {
+      await campaignContract.methods.finalizeRequest(0).send({ from: creator, gas: "1000000"});
+
+      assert(false);
+    } catch (error) {
+      assert(error);  
+    }
+
+  });
+
+  it("A request with not enough approvals cannot be processed", async () => {
+    await campaignContract.methods.contribute().send({ 
+      from: creator,
+      value: "1100" 
+    });
+    
+    await campaignContract.methods.contribute().send({ 
+      from: contributor,
+      value: "1100" 
+    });
+
+    await campaignContract.methods
+      .createRequest("Buy batteries", "200", recipient)
+      .send({ from: creator, gas: "1000000"});
+
+    await campaignContract.methods.approveRequest(0).send({ from: contributor, gas: "1000000"});
+    
+    try {
+      await campaignContract.methods.finalizeRequest(0).send({ from: creator, gas: "1000000"});
+
+      assert(false);
+    } catch (error) {
+      assert(error);  
+    }
+  });
+
+  it("An expensive request cannot be processed without sufficient funds", async () => {
+    await campaignContract.methods.contribute().send({ 
+      from: contributor,
+      value: "1100" 
+    });
+
+    await campaignContract.methods
+      .createRequest("Buy batteries", "2000", recipient)
+      .send({ from: creator, gas: "1000000"});
+
+    await campaignContract.methods.approveRequest(0).send({ from: contributor, gas: "1000000"});
+
+    try {
+      await campaignContract.methods.finalizeRequest(0).send({ from: creator, gas: "1000000"});
+
+      assert(false);
+    } catch (error) {
+      assert(error);  
+    }
   });
 });
