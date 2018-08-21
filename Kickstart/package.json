@@ -4,7 +4,8 @@
   "description": "A project for creating campaigns and contributing to them",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "dev": "next dev"
   },
   "author": "Dominik Stefancik",
   "license": "MIT",
