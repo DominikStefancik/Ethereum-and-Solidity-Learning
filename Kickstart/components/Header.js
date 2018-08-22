@@ -1,20 +1,22 @@
 import React from "react";
 import { Menu } from "semantic-ui-react";
+// "Link" is a React component which allows us to create anchor tag inside other React components
+import { Link } from "../routes";
 
 export default (props) => {
   return (
     <Menu style={{ marginTop : '10px' }}>
-        <Menu.Item name="kickstarter">
-          Kickstarter
-        </Menu.Item>
+        <Link route="/">
+          <a className="item">Kickstarter</a>
+        </Link>
 
         <Menu.Menu position="right">
-          <Menu.Item name="campaigns">
-            Campaigns
-          </Menu.Item>
-          <Menu.Item name="plus">
-            +
-          </Menu.Item>
+          <Link route="/">
+            <a className="item">Campaigns</a>
+          </Link>
+          <Link route="/campaigns/new">
+            <a className="item">+</a>
+          </Link>
         </Menu.Menu>
       </Menu>
   );
