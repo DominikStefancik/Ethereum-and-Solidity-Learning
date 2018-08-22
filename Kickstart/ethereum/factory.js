@@ -1,4 +1,4 @@
-// This file provides a contract instance of Campaign factory which can be used in any part of the app
+// This file provides a contract instance of CampaignFactory which can be used in any part of the app
 
 import web3 from "./web3";
 import CampaignFactory from "./build/CampaignFactory.json";
