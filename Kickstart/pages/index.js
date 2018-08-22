@@ -4,6 +4,9 @@ import { Button, Card } from "semantic-ui-react";
 import Layout from "../components/Layout";
 import campaignFactory from "../ethereum/factory";
 
+// "Link" is a React component which allows us to input an anchor tag inside other React components
+import { Link } from "../routes";
+
 class CampaignIndex extends Component {
   static async getInitialProps() {
     const campaigns = await campaignFactory.methods.getDeployedCampaigns().call();
@@ -16,7 +19,11 @@ class CampaignIndex extends Component {
     const items = this.props.campaigns.map(address => {
       return {
         header: address,
-        description: <a>View campaign</a>,
+        description: (
+          <Link route={`/campaigns/${address}`}>
+            <a>View campaign</a>
+          </Link>
+        ),
         fluid: true
       };
     });
@@ -29,7 +36,13 @@ class CampaignIndex extends Component {
       <Layout>
         <div>
           <h3>Open Campaigns</h3>
-          <Button floated="right" content="Create Campaign" icon="add circle" primary />
+
+          <Link route="/campaigns/new">
+            <a>
+              <Button floated="right" content="Create Campaign" icon="add circle" primary />
+            </a>
+          </Link>
+
           <div>{this.renderCampaigns()}</div>
         </div>
       </Layout>
