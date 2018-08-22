@@ -2,5 +2,9 @@
 // "next-routes" exports a function which we need to immediately call
 const routes = require("next-routes")();
 
+routes
+  .add("/campaigns/new", "/campaigns/new")
+  .add("/campaigns/:campaignAddress", "/campaigns/show");
+
 // routes exports a bunch of helper methods/components to enable the navigation among the pages
 module.exports = routes;
