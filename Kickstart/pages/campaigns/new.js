@@ -5,6 +5,9 @@ import Layout from "../../components/Layout"
 import campaignFactory from "../../ethereum/factory";
 import web3 from "../../ethereum/web3";
 
+// "Router" allows users to navigate among different pages of the app
+import { Router } from "../../routes";
+
 class NewCampaign extends Component {
   state = {
     minimumContribution: "",
@@ -24,6 +27,8 @@ class NewCampaign extends Component {
         .send({
           from: accounts[0]
         });
+
+      Router.pushRoute("/");
     } catch (error) {
       this.setState({ errorMessage: error.message });
     }
