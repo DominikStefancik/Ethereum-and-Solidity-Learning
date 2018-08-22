@@ -8,6 +8,7 @@ import campaignFactory from "../ethereum/factory";
 import { Link } from "../routes";
 
 class CampaignIndex extends Component {
+  // this method is Next.js specific and is called before a component is created
   static async getInitialProps() {
     const campaigns = await campaignFactory.methods.getDeployedCampaigns().call();
 
