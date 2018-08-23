@@ -16,14 +16,18 @@ const MANAGER_KEY = "4";
 
 class ShowCampaign extends Component {
   // this method is Next.js specific and is called before a component is created
+  // object "props" is specific for Next.js in this function and is different than the 
+  // object "props" which is used by React compnents
   static async getInitialProps(props) {
     // this is the "campaignAddress" token from URL which we defined in the routes.js file  
     const campaignAddress = props.query.campaignAddress;
     const campaign = campaignProvider(campaignAddress);
     const summary = await campaign.methods.getSummary().call();
 
-    // this object is returned as "props" object when the component is rendered 
+    // this object is returned as "props" object when the component is rendered
+    // this object "props" is used by React compnents 
     return {
+      campaignAddress: campaignAddress,
       minimumContribution: summary[MINIMUM_CONTRIBUTION_KEY],
       campaignBalance: summary[CAMPAIGN_BALANCE_KEY],
       requestsCount: summary[REQUESTS_COUNT_KEY],
@@ -79,7 +83,7 @@ class ShowCampaign extends Component {
             {this.renderCards()}
           </Grid.Column>
           <Grid.Column width={6}>
-            <ContributionForm />
+            <ContributionForm campaignAddress={this.props.campaignAddress}/>
           </Grid.Column>
         </Grid>
       </Layout>
