@@ -49,7 +49,10 @@ class NewCampaign extends Component {
               value={this.state.minimumContribution}
               onChange={event => this.setState({ minimumContribution: event.target.value })} />
           </Form.Field>
-          <Button type='submit' primary loading={this.state.creatingCampaign}>Create!</Button>
+          <Button type='submit' primary loading={this.state.creatingCampaign}
+                  disabled={this.state.creatingCampaign}>
+                  Create!
+          </Button>
           <Message error header="Error while creating a campaign" content={this.state.errorMessage} />
         </Form>
       </Layout>  
