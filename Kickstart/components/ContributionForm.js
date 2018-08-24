@@ -48,7 +48,7 @@ class ContributionForm extends Component {
                  onChange={event => this.setState({ value: event.target.value })}/>
         </Form.Field>
         <Button primary loading={this.state.contributing} disabled={this.state.contributing}>Contribute!</Button>
-        <Message error header="Error while contributong to the campaign" content={this.state.errorMessage} />
+        <Message error header="Error while contributing to the campaign" content={this.state.errorMessage} />
       </Form>
     );
   }
