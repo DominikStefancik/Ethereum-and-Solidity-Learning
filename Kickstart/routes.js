@@ -4,7 +4,8 @@ const routes = require("next-routes")();
 
 routes
   .add("/campaigns/new", "/campaigns/new")
-  .add("/campaigns/:campaignAddress", "/campaigns/show");
+  .add("/campaigns/:campaignAddress", "/campaigns/show")
+  .add("/campaigns/:campaignAddress/requests", "/campaigns/requests/list");
 
 // routes exports a bunch of helper methods/components to enable the navigation among the pages
 module.exports = routes;

@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Card, Grid } from "semantic-ui-react";
+import { Button, Card, Grid } from "semantic-ui-react";
 
 import Layout from "../../components/Layout";
 import ContributionForm from "../../components/ContributionForm";
 import campaignProvider from "../../ethereum/campaign";
 import web3 from "../../ethereum/web3";
+import { Link } from "../../routes";
 
 // the keys are "indexed" according to the order specified in the "getSummary" method
 // in the Campaign contract 
@@ -79,12 +80,23 @@ class ShowCampaign extends Component {
         <h3>Campaign Details</h3>
 
         <Grid>
-          <Grid.Column width={10}>
-            {this.renderCards()}
-          </Grid.Column>
-          <Grid.Column width={6}>
-            <ContributionForm campaignAddress={this.props.campaignAddress}/>
-          </Grid.Column>
+          <Grid.Row>
+            <Grid.Column width={10}>
+              {this.renderCards()}
+            </Grid.Column>
+            <Grid.Column width={6}>
+              <ContributionForm campaignAddress={this.props.campaignAddress}/>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column>
+              <Link route={`/campaigns/${this.props.campaignAddress}/requests`}>
+                <a>
+                  <Button primary>View Requests</Button>
+                </a>
+              </Link>
+            </Grid.Column>
+          </Grid.Row>
         </Grid>
       </Layout>
     );
