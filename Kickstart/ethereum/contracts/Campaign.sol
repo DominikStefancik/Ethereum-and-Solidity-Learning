@@ -17,7 +17,7 @@ contract Campaign {
     struct Request {
         // contains reason why a request should be processed and the money sent to a vendor
         string description;
-        // says how much money we ant to send to a vendor
+        // says how much money we want to send to a vendor
         uint value;
         address recipient;
         // says if the request is completed and the money sent to the vendor
