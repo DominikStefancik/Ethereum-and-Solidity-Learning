@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button, Icon, Label, Menu, Table } from 'semantic-ui-react';
 
 import Layout from "../../../components/Layout";
+import RequestRow from "../../../components/RequestRow";
 import { Link } from "../../../routes";
 import campaignProvider from "../../../ethereum/campaign";
 
@@ -12,6 +13,7 @@ class RequestList extends Component {
     const campaign = campaignProvider(campaignAddress);
 
     const requestsCount = await campaign.methods.getRequestCount().call();
+    const contributorsCount = await campaign.methods.contributorsCount().call();
 
     // Solidity does NOT support retrieving a whole array which items are of a complex type
     // Request in our Campaign contract is of the type Struct which is a complex type
@@ -24,14 +26,26 @@ class RequestList extends Component {
       })
     );
 
-    console.log(requests);
+    // a statement "return { campaign }" is equivalent to "return { campaign: campaign }"
+    return { campaign, campaignAddress, requests, requestsCount, contributorsCount };
+  }
 
-    // this statement is equivalent to "return { campaignAddress: campaignAddress }"
-    return { campaignAddress, requests, requestsCount };
+  renderRows() {
+    return this.props.requests.map((request, index) => {
+      return ( 
+        <RequestRow
+          key={index}
+          id={index}
+          request={request}
+          campaign={this.props.campaign}
+          contributorsCount={this.props.contributorsCount}
+        />
+      );
+    });
   }
 
   render() {
-    const { Header, Row, HeaderCell, Body} = Table;
+    const { Header, Row, HeaderCell, Body } = Table;
 
     return (
       <Layout>
@@ -47,13 +61,17 @@ class RequestList extends Component {
             <Row>
               <HeaderCell>ID</HeaderCell>
               <HeaderCell>Description</HeaderCell>
-              <HeaderCell>Amount</HeaderCell>
+              <HeaderCell>Amount (in ether)</HeaderCell>
               <HeaderCell>Recipient</HeaderCell>
               <HeaderCell>Approval Count</HeaderCell>
               <HeaderCell>Approve</HeaderCell>
               <HeaderCell>Finalise</HeaderCell>
             </Row>
           </Header>
+
+          <Body>
+            {this.renderRows()}
+          </Body>
         </Table>
 
       </Layout>
