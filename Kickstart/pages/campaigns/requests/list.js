@@ -21,7 +21,7 @@ class RequestList extends Component {
     // and retrieve each of them one by one
     const requests = await Promise.all(
       // Promise.all() will acummulate all asynchronous calls which retrieve request at the given index
-      Array(requestsCount).fill().map((element, index) => {
+      Array(parseInt(requestsCount)).fill().map((element, index) => {
         return campaign.methods.requestList(index).call();
       })
     );
@@ -38,6 +38,7 @@ class RequestList extends Component {
           id={index}
           request={request}
           campaign={this.props.campaign}
+          campaignAddress={this.props.campaignAddress}
           contributorsCount={this.props.contributorsCount}
         />
       );
@@ -49,10 +50,15 @@ class RequestList extends Component {
 
     return (
       <Layout>
+        <Link route={`/campaigns/${this.props.campaignAddress}`}>
+          <a>
+            Back to the campaign
+          </a>
+        </Link>
         <h3>Request List</h3>
         <Link route={`/campaigns/${this.props.campaignAddress}/requests/new`}>
           <a>
-            <Button primary>Add Request</Button>
+            <Button primary floated="right" style={{ marginBottom: 10 }}>Add Request</Button>
           </a>
         </Link>
 
@@ -73,7 +79,7 @@ class RequestList extends Component {
             {this.renderRows()}
           </Body>
         </Table>
-
+        <div>Found {this.props.requestsCount} requests</div>
       </Layout>
     );
   }

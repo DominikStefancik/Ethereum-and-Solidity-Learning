@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button, Table } from 'semantic-ui-react';
 
 import web3 from "../ethereum/web3";
+import { Router } from "../routes";
 
 class RequestRow extends Component {
   onApprove = async () => {
@@ -11,6 +12,8 @@ class RequestRow extends Component {
     await campaign.methods.approveRequest(id).send({
       from: accounts[0]
     });
+
+    Router.replaceRoute(`/campaigns/${this.props.campaignAddress}/requests`);
   }
 
   onFinalise = async () => {
@@ -20,27 +23,39 @@ class RequestRow extends Component {
     await campaign.methods.finalizeRequest(id).send({
       from: accounts[0]
     });
+
+    Router.replaceRoute(`/campaigns/${this.props.campaignAddress}/requests`);
   }
 
   render() {
     const { Row, Cell } = Table;
     const { id, request, contributorsCount } = this.props;
+    const readyToFinalise = request.approvalCount > contributorsCount / 2;
+    let backgroundColor;
+
+    if (request.isCompleted) {
+      backgroundColor = "orange";
+    } else if (readyToFinalise) {
+      backgroundColor = "#4CBB17";
+    } else {
+      backgroundColor = "white";
+    }
 
     return (
-      <Row>
+      <Row style={{ backgroundColor: backgroundColor }}>
         <Cell>{id}</Cell>
         <Cell>{request.description}</Cell>
         <Cell>{web3.utils.fromWei(request.value, "ether")}</Cell>
         <Cell>{request.recipient}</Cell>
         <Cell>{request.approvalCount}/{contributorsCount}</Cell>
         <Cell>
-          {request.complete ? null : (
-            <Button color="green" onClick={this.onApprove}>Approve</Button>
+          {request.isCompleted ? null : (
+            <Button style={{ backgroundColor: "#4682B4" }} onClick={this.onApprove}>Approve</Button>
           )}
         </Cell>
         <Cell>
-          {request.complete ? null : (
-            <Button color="teal" onClick={this.onFinalise}>Finalise</Button>
+          {request.isCompleted ? null : (
+            <Button style={{ backgroundColor: "#ACE894" }} onClick={this.onFinalise}>Finalise</Button>
           )}
         </Cell>
       </Row>
