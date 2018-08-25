@@ -7,7 +7,17 @@ class RequestRow extends Component {
   onApprove = async () => {
     const { campaign, id } = this.props;
     const accounts = await web3.eth.getAccounts();
+
     await campaign.methods.approveRequest(id).send({
+      from: accounts[0]
+    });
+  }
+
+  onFinalise = async () => {
+    const { campaign, id } = this.props;
+    const accounts = await web3.eth.getAccounts();
+
+    await campaign.methods.finalizeRequest(id).send({
       from: accounts[0]
     });
   }
@@ -24,9 +34,15 @@ class RequestRow extends Component {
         <Cell>{request.recipient}</Cell>
         <Cell>{request.approvalCount}/{contributorsCount}</Cell>
         <Cell>
-          <Button color="green" basic onClick={this.onApprove}>Approve</Button>
+          {request.complete ? null : (
+            <Button color="green" onClick={this.onApprove}>Approve</Button>
+          )}
         </Cell>
-        <Cell>Finalise</Cell>
+        <Cell>
+          {request.complete ? null : (
+            <Button color="teal" onClick={this.onFinalise}>Finalise</Button>
+          )}
+        </Cell>
       </Row>
     );
   }
